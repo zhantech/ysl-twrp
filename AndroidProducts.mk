@@ -1,2 +1,2 @@
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/omni_sakura.mk
+    $(LOCAL_DIR)/omni_ysl.mk
