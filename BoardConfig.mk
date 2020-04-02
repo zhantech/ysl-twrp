@@ -1,5 +1,5 @@
 #
-# Copyright 2016 The Android Open Source Project
+# Copyright (C) 2017-2018 The LineageOS Project
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,83 +14,238 @@
 # limitations under the License.
 #
 
-# This contains the module build definitions for the hardware-specific
-# components for this device.
-#
-# As much as possible, those components should be built unconditionally,
-# with device-specific names to avoid collisions, to avoid device-specific
-# bitrot and build breakages. Building a component unconditionally does
-# *not* include it on all devices, so it is safe even with hardware-specific
-# components.
-
 DEVICE_PATH := device/xiaomi/ysl
 
-# Architecture
-TARGET_BOARD_SUFFIX := _64
+TARGET_SPECIFIC_HEADER_PATH := $(DEVICE_PATH)/include
 
+# Architecture
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
 TARGET_CPU_ABI2 :=
-TARGET_CPU_VARIANT := generic
+TARGET_CPU_VARIANT := cortex-a53
 
 TARGET_2ND_ARCH := arm
-TARGET_2ND_ARCH_VARIANT := armv7-a-neon
+TARGET_2ND_ARCH_VARIANT := armv8-a
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a53
+
+TARGET_BOARD_PLATFORM := msm8953
+TARGET_BOARD_PLATFORM_GPU := qcom-adreno506
+BUILD_BROKEN_DUP_RULES := true
+BUILD_BROKEN_PHONY_TARGETS := true
+
+TARGET_BOARD_SUFFIX := _64
+TARGET_USES_64_BIT_BINDER := true
+
+# Kernel
+TARGET_KERNEL_CONFIG := ysl_defconfig
+BOARD_KERNEL_BASE := 0x80000000
+BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 androidboot.bootdevice=7824900.sdhci earlycon=msm_hsl_uart,0x78af000
+BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
+BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
+BOARD_KERNEL_PAGESIZE :=  2048
+BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x01000000 --tags_offset 0x00000100
+TARGET_KERNEL_SOURCE := kernel/xiaomi/msm8953
+TARGET_KERNEL_VERSION := 3.18
+
+# ANT
+BOARD_ANT_WIRELESS_DEVICE := "vfs-prerelease"
+
+# Audio
+AUDIO_FEATURE_ENABLED_ANC_HEADSET := true
+AUDIO_FEATURE_ENABLED_ALAC_OFFLOAD := true
+AUDIO_FEATURE_ENABLED_AUDIOSPHERE := true
+AUDIO_FEATURE_ENABLED_COMPRESS_VOIP := true
+AUDIO_FEATURE_ENABLED_CUSTOMSTEREO := true
+AUDIO_FEATURE_ENABLED_EXTN_FORMATS := true
+AUDIO_FEATURE_ENABLED_FM_POWER_OPT := true
+AUDIO_FEATURE_ENABLED_FLAC_OFFLOAD := true
+AUDIO_FEATURE_ENABLED_FLUENCE := true
+AUDIO_FEATURE_ENABLED_EXTENDED_COMPRESS_FORMAT := true
+AUDIO_FEATURE_ENABLED_HFP := true
+AUDIO_FEATURE_ENABLED_KPI_OPTIMIZE := true
+AUDIO_FEATURE_ENABLED_MULTI_VOICE_SESSIONS := true
+AUDIO_FEATURE_ENABLED_PCM_OFFLOAD := true
+AUDIO_FEATURE_ENABLED_PCM_OFFLOAD_24 := true
+AUDIO_FEATURE_ENABLED_PROXY_DEVICE := true
+AUDIO_FEATURE_ENABLED_SOURCE_TRACKING := true
+AUDIO_FEATURE_ENABLED_EXT_AMPLIFIER := false
+AUDIO_USE_LL_AS_PRIMARY_OUTPUT := true
+BOARD_SUPPORTS_SOUND_TRIGGER := true
+BOARD_USES_ALSA_AUDIO := true
+#USE_CUSTOM_AUDIO_POLICY := 1
+USE_XML_AUDIO_POLICY_CONF := 1
+TARGET_USES_AOSP_FOR_AUDIO := true
 
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := MSM8953
 TARGET_NO_BOOTLOADER := true
 
-# Kernel
-BOARD_KERNEL_BASE := 0x80000000
-BOARD_KERNEL_CMDLINE := androidboot.hardware=qcom msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 androidboot.bootdevice=7824900.sdhci
-BOARD_KERNEL_PAGESIZE := 4096
-BOARD_KERNEL_TAGS_OFFSET := 0x00000100
-BOARD_RAMDISK_OFFSET := 0x01000000
-TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/zImage-dtb
+# Bootanimation
+TARGET_BOOTANIMATION_PRELOAD := true
+TARGET_BOOTANIMATION_TEXTURE_CACHE := true
 
-# Platform
-TARGET_BOARD_PLATFORM := msm8953
-TARGET_BOARD_PLATFORM_GPU := qcom-adreno506
+# Bluetooth
+BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(DEVICE_PATH)/bluetooth
+BOARD_HAVE_BLUETOOTH_QCOM := true
+
+# Camera
+BOARD_QTI_CAMERA_32BIT_ONLY := true
+TARGET_TS_MAKEUP := true
+TARGET_USES_QTI_CAMERA_DEVICE := true
+USE_DEVICE_SPECIFIC_CAMERA := true
+
+# Charger
+BOARD_CHARGER_ENABLE_SUSPEND := true
+BOARD_CHARGER_DISABLE_INIT_BLANK := true
+
+# CNE and DPM
+BOARD_USES_QCNE := true
+
+# Crypto
+TARGET_HW_DISK_ENCRYPTION := true
+
+# Dexpreopt
+ifeq ($(HOST_OS),linux)
+  ifneq ($(TARGET_BUILD_VARIANT),eng)
+    ifeq ($(WITH_DEXPREOPT),)
+      WITH_DEXPREOPT_BOOT_IMG_AND_SYSTEM_SERVER_ONLY := false
+      WITH_DEXPREOPT := true
+    endif
+  endif
+endif
+
+# Display
+MAX_VIRTUAL_DISPLAY_DIMENSION := 4096
+TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS := true
+
+TARGET_USES_ION := true
+TARGET_USES_NEW_ION_API :=true
+TARGET_USES_GRALLOC1 := true
+TARGET_USES_HWC2 := true
+TARGET_USES_OVERLAY := true
+
+MAX_EGL_CACHE_KEY_SIZE := 12*1024
+MAX_EGL_CACHE_SIZE := 2048*1024
+
+OVERRIDE_RS_DRIVER := libRSDriver_adreno.so
+USE_OPENGL_RENDERER := true
+
+# DRM
+TARGET_ENABLE_MEDIADRM_64 := true
+
+# Filesystem
+TARGET_USERIMAGES_USE_F2FS := true
+TARGET_USERIMAGES_USE_EXT4 := true
+BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_ROOT_EXTRA_SYMLINKS := \
+    /vendor/dsp:/dsp \
+    /vendor/firmware_mnt:/firmware \
+    /mnt/vendor/persist:/persist
+TARGET_COPY_OUT_VENDOR := vendor
+TARGET_FS_CONFIG_GEN := $(DEVICE_PATH)/config.fs
+
+# FM
+BOARD_HAVE_QCOM_FM := true
+
+# HIDL
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := $(DEVICE_PATH)/vendor_framework_compatibility_matrix.xml
+DEVICE_FRAMEWORK_MANIFEST_FILE := $(DEVICE_PATH)/framework_manifest.xml
+DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/manifest.xml
+DEVICE_MATRIX_FILE   := $(DEVICE_PATH)/compatibility_matrix.xml
+
+# Init
+TARGET_INIT_VENDOR_LIB := libinit_ysl
+TARGET_RECOVERY_DEVICE_MODULES := libinit_ysl
+
+# Media
+TARGET_USES_MEDIA_EXTENSIONS := true
 
 # Partitions
 BOARD_BOOTIMAGE_PARTITION_SIZE := 67108864
-BOARD_CACHEIMAGE_PARTITION_SIZE := 402653184
-BOARD_RECOVERYIMAGE_PARTITION_SIZE := 67108864
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 3221225472
-BOARD_USERDATAIMAGE_PARTITION_SIZE := 58846064640
-BOARD_FLASH_BLOCK_SIZE := 262144 # (BOARD_KERNEL_PAGESIZE * 64)
+BOARD_PERSISTIMAGE_PARTITION_SIZE := 33554432
+BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
+BOARD_CACHEIMAGE_PARTITION_SIZE := 268435456
+BOARD_RECOVERYIMAGE_PARTITION_SIZE := 67108864
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 25765043200 # 25765059584 - 16384
+BOARD_VENDORIMAGE_PARTITION_SIZE := 1073741824
+TARGET_USES_MKE2FS := true
+
+# Peripheral manager
+TARGET_PER_MGR_ENABLED := true
+
+# Power
+TARGET_TAP_TO_WAKE_NODE := "/sys/devices/soc/78b7000.i2c/i2c-3/3-0038/fts_gesture_mode"
+# TARGET_USES_NON_LEGACY_POWERHAL := true
+
+# Qualcomm
+BOARD_USES_QCOM_HARDWARE := true
 
 # Recovery
-BOARD_HAS_LARGE_FILESYSTEM := true
-BOARD_HAS_NO_SELECT_BUTTON := true
-TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
-TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_USERIMAGES_USE_F2FS := true
+TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/rootdir/etc/fstab.qcom
 
-# System-as-root
-BOARD_BUILD_SYSTEM_ROOT_IMAGE := true
+# RIL
+DISABLE_RILD_OEM_HOOK := true
+TARGET_PROVIDES_QTI_TELEPHONY_JAR := true
+TARGET_USES_OLD_MNC_FORMAT := true
 
-# TWRP Configuration
-TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/twrp.fstab
-RECOVERY_SDCARD_ON_DATA := true
-TARGET_RECOVERY_QCOM_RTC_FIX := true
-TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/soc/7000000.ssusb/7000000.dwc3/gadget/lun0/file"
-TW_BRIGHTNESS_PATH := "/sys/class/leds/lcd-backlight/brightness"
-TW_EXCLUDE_DEFAULT_USB_INIT := true
-TW_EXCLUDE_SUPERSU := true
-TW_EXTRA_LANGUAGES := true
-TW_INCLUDE_CRYPTO := true
-TW_INCLUDE_NTFS_3G := true
-TW_SCREEN_BLANK_ON_BOOT := true
-TW_THEME := portrait_hdpi
+# Security patch level
+VENDOR_SECURITY_PATCH := 2019-06-01
 
-# Disable Mouse Cursor
-TW_INPUT_BLACKLIST := "hbtp_vm"
+# SELinux
+BOARD_PLAT_PRIVATE_SEPOLICY_DIR += $(DEVICE_PATH)/sepolicy/private
+BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
+
+# We modify several neverallows, so let the build proceed
+ifneq ($(TARGET_BUILD_VARIANT),user)
+SELINUX_IGNORE_NEVERALLOWS := true
+endif
 
 # Treble
-BOARD_NEEDS_VENDORIMAGE_SYMLINK := false
-TARGET_COPY_OUT_VENDOR := vendor
+BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
+PRODUCT_FULL_TREBLE_OVERRIDE := true
+
+# Thermal
+USE_DEVICE_SPECIFIC_THERMAL := true
+
+# Wi-Fi
+BOARD_HAS_QCOM_WLAN := true
+BOARD_HAS_QCOM_WLAN_SDK := true
+BOARD_USES_AOSP_WLAN_HAL := true
+BOARD_HOSTAPD_DRIVER := NL80211
+BOARD_HOSTAPD_PRIVATE_LIB := lib_driver_cmd_qcwcn
+BOARD_WLAN_DEVICE := qcwcn
+BOARD_WPA_SUPPLICANT_DRIVER := NL80211
+BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_qcwcn
+WIFI_DRIVER_FW_PATH_AP := "ap"
+WIFI_DRIVER_FW_PATH_STA := "sta"
+WPA_SUPPLICANT_VERSION := VER_0_8_X
+
+# Inherit from the proprietary version
+-include vendor/xiaomi/ysl/BoardConfigVendor.mk
+-include vendor/xiaomi/msm8953-common/BoardConfigVendor.mk
+
+# OTA Assert
+TARGET_OTA_ASSERT_DEVICE := ysl,ysl-user,redmi s2,redmi y2
+
+#SHRP_Variables
+SHRP_PATH := device/xiaomi/ysl
+SHRP_MAINTAINER := MiDoNaSR
+SHRP_DEVICE_CODE := ysl
+SHRP_EDL_MODE := 1
+SHRP_REC := /dev/block/bootdevice/by-name/recovery
+SHRP_EXTERNAL := /external_sd
+SHRP_INTERNAL := /sdcard
+SHRP_OTG := /usb_otg
+SHRP_FLASH := 1
+SHRP_FONP_1 := /sys/class/leds/led:torch_0/brightness
+SHRP_FONP_2 := /sys/class/leds/led:torch_1/brightness
+SHRP_FONP_3 := /sys/class/leds/led:switch/brightness
+SHRP_FLASH_MAX_BRIGHTNESS := 200
+SHRP_REC_TYPE := Treble
+SHRP_DEVICE_TYPE := A-Only
+
