@@ -232,7 +232,7 @@ WPA_SUPPLICANT_VERSION := VER_0_8_X
 # OTA Assert
 TARGET_OTA_ASSERT_DEVICE := ysl,ysl-user,redmi s2,redmi y2
 
-#SHRP_Variables
+#redwolf_Variables
 SHRP_PATH := device/xiaomi/ysl
 SHRP_MAINTAINER := MiDoNaSR
 SHRP_DEVICE_CODE := ysl
